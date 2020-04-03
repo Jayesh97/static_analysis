@@ -19,7 +19,7 @@ function traverse_with_dir(dir_path, result) {
   return result
 }
 
-res = traverse_with_dir("/home/sjbondu/Complexity/app/checkbox.io/server-side",[]);
+// res = traverse_with_dir("/home/sjbondu/Complexity/app/checkbox.io/server-side",[]);
 // console.log(res)
 // console.log("i have node_modules".includes("node_odules"))
 exports.traverse_with_dir = traverse_with_dir;

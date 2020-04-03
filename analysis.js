@@ -1,5 +1,5 @@
 var esprima = require("esprima");
-var options = {tokens:true, tolerant: true, loc: true, range: true };
+var options = {tokens:true, tolerant: true, loc: true, range: true }
 var fs = require("fs");
 const path = require("path");
 var file_array = require("./file_array.js");

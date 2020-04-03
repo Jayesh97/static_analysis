@@ -1,7 +1,7 @@
 var esprima = require("esprima");
-var options = {jsx:true,tokens:true, tolerant: true, loc: true, range: true };
+var options = {tokens:true, tolerant: true, loc: true, range: true };
 var fs = require("fs");
-const path = require("path")
+const path = require("path");
 var file_array = require("./file_array.js");
 const chalk = require("chalk");
 // var func_name = "";
@@ -13,8 +13,8 @@ function main()
 
 	//jenkins workspace
 	console.log("started");
-	// f_list = file_array.traverse_with_dir("./app/server-side",[])
-	f_list = file_array.traverse_with_dir("./app/checkbox.io/server-side",[])
+	f_list = file_array.traverse_with_dir("./app/server-side",[]);
+	// f_list = file_array.traverse_with_dir("./app/checkbox.io/server-side",[]);
 
 	for( let fname of f_list){
 		complexity(fname);}

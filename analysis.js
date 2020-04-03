@@ -1,10 +1,9 @@
 var esprima = require("esprima");
-var options = {tokens:true, tolerant: true, loc: true, range: true }
+var options = {tokens: true, tolerant: true, loc: true, range: true };
 var fs = require("fs");
 const path = require("path");
 var file_array = require("./file_array.js");
 const chalk = require("chalk");
-// var func_name = "";
 
 
 function main()
@@ -14,17 +13,14 @@ function main()
 	//jenkins workspace
 	console.log("started");
 	f_list = file_array.traverse_with_dir("./app/server-side",[]);
-	// f_list = file_array.traverse_with_dir("./app/checkbox.io/server-side",[]);
+	// f_list = file_array.traverse_with_dir("/home/sjbondu/Complexity/app/checkbox.io/server-side",[]);
 
 	for( let fname of f_list){
 		complexity(fname);}
-	// complexity("/home/sjbondu/checkbox.io/server-side/site/test/complexity/nestedifs.js")
-
 	for( var node in builders )
 	{
 		var builder = builders[node];
 		builder.report(); //its basically a print statement
-		// console.log(builder.report,"I am after report =====================")
 	}
 	// console.log(builders)
 
@@ -113,19 +109,47 @@ function traverseWithParents(object, visitor)
     }
 }
 
-function traverseWithParents_d(object, depth ,visitor)
+function atleast_one_if(object)
 {
     var key, child;
+    for (key in object) {
+        if (object.hasOwnProperty(key)) {
+            child = object[key];
+            if (typeof child === 'object' && child !== null && key != 'parent') 
+            {
+				child.parent = object;
+				if(object.type==="IfStatement"){
+					console.log("here")
+					return 1
+				}
+				atleast_one_if(child);
+            }
+        }
+	}
+}
 
-    visitor.call(null, object, depth);
-
+function depth_fn(object,depth)
+{
+	builder = builders[func_name]
+	builder.MaxNestingDepth = Math.max(depth,builder.MaxNestingDepth)
+	builders[builder] = builder
     for (key in object) {
         if (object.hasOwnProperty(key)) {
             child = object[key];
             if (typeof child === 'object' && child !== null && key != 'parent') 
             {
             	child.parent = object;
-					traverseWithParents(child, depth ,visitor);
+				if(object.type === 'IfStatement' && object.alternate === null){
+					// console.log(object.test.name)
+					depth_fn(child,depth+1)
+				}
+				else if(object.type === 'IfStatement'){
+					depth_fn(object.consequent,depth+1)
+					depth_fn(object.alternate,depth)
+				}
+				else{
+					depth_fn(child,depth)
+				}
             }
         }
     }
@@ -186,23 +210,14 @@ function complexity(filePath)
 				}
 			})
 
-			// console.log(func_name)
-			// traverseWithParents(node, function(node){
-			// 	if (node.type === 'IfStatement' && node.alternate === null){
-			// 		return traverseWithParents(node.consequent)+1
-			// 	}
-			// 	else if (node.type === 'IfStatement' && node.alternate != "IfStatement"){
-			// 		left = traverseWithParents(node.cosequent)
-			// 		right = traverseWithParents(node.alternate)
-			// 		if (left>right){
-			// 			return left+1
-			// 		}
-			// 		else {
-			// 			return right+1
-			// 		}
-			// 	return 0
-			// 	} 
-			// })
+			
+			traverseWithParents(node, function(node){
+				builder = builders[func_name]
+				depth = 0
+				if (node.type === 'IfStatement'){
+					depth_fn(node,depth)
+				}			
+			})
 
 		}
 

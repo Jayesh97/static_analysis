@@ -11,15 +11,10 @@ function main()
 {
 	var args = process.argv.slice(2);
 
-	if( args.length == 0 )
-	{
-		args = ["analysis.js"]; //add threshold for the option too
-	}
-	var filePath = args[0];
-
 	//jenkins workspace
-	
-	f_list = file_array.traverse_with_dir("app/server-side",[])
+	console.log("started");
+	f_list = file_array.traverse_with_dir("./app/server-side",[])
+	// f_list = file_array.traverse_with_dir("./app/checkbox.io/server-side",[])
 
 	for( let fname of f_list){
 		complexity(fname);}
@@ -27,11 +22,11 @@ function main()
 
 	for( var node in builders )
 	{
-		// var builder = builders[node];
-		// builder.report(); //its basically a print statement
+		var builder = builders[node];
+		builder.report(); //its basically a print statement
 		// console.log(builder.report,"I am after report =====================")
 	}
-	console.log(builders)
+	// console.log(builders)
 
 }
 

@@ -19,7 +19,7 @@ function main()
 
 	//jenkins workspace
 	
-	f_list = file_array.traverse_with_dir("/home/sjbondu/checkbox.io/server-side",[])
+	f_list = file_array.traverse_with_dir("app/server-side",[])
 
 	for( let fname of f_list){
 		complexity(fname);}

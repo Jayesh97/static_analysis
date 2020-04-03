@@ -1,6 +1,11 @@
 var esprima = require("esprima");
 var options = {tokens:true, tolerant: true, loc: true, range: true };
 var fs = require("fs");
+const path = require("path")
+var file_array = require("./file_array.js");
+const chalk = require("chalk");
+// var func_name = "";
+
 
 function main()
 {
@@ -8,18 +13,25 @@ function main()
 
 	if( args.length == 0 )
 	{
-		args = ["analysis.js"];
+		args = ["analysis.js"]; //add threshold for the option too
 	}
 	var filePath = args[0];
-	
-	complexity(filePath);
 
-	// Report
+	//jenkins workspace
+	
+	f_list = file_array.traverse_with_dir("/home/sjbondu/checkbox.io/server-side",[])
+
+	for( let fname of f_list){
+		complexity(fname);}
+	// complexity("/home/sjbondu/checkbox.io/server-side/site/test/complexity/nestedifs.js")
+
 	for( var node in builders )
 	{
-		var builder = builders[node];
-		builder.report();
+		// var builder = builders[node];
+		// builder.report(); //its basically a print statement
+		// console.log(builder.report,"I am after report =====================")
 	}
+	console.log(builders)
 
 }
 
@@ -40,21 +52,29 @@ function FunctionBuilder()
 	this.MaxNestingDepth    = 0;
 	// The max number of conditions if one decision statement.
 	this.MaxConditions      = 0;
+	// Maxmsg chains
+	this.MaxMsgChains = 0;
+	//LOC
+	this.LOC = 0;
 
 	this.report = function()
 	{
-		console.log(
+		console.log((chalk.rgb(150,136,0)
 		   (
 		   	"{0}(): {1}\n" +
 		   	"============\n" +
 			   "SimpleCyclomaticComplexity: {2}\t" +
 				"MaxNestingDepth: {3}\t" +
 				"MaxConditions: {4}\t" +
-				"Parameters: {5}\n\n"
-			)
+				"Parameters: {5}\t" +
+				"LOC: {6}\t" +
+				"MaxMsgChains: {7}\n\n"
+			))
 			.format(this.FunctionName, this.StartLine,
 				     this.SimpleCyclomaticComplexity, this.MaxNestingDepth,
-			        this.MaxConditions, this.ParameterCount)
+					this.MaxConditions, this.ParameterCount, this.LOC, this.MaxMsgChains)
+					
+		
 		);
 	}
 };
@@ -67,15 +87,14 @@ function FileBuilder()
 	this.Strings = 0;
 	// Number of imports in a file.
 	this.ImportCount = 0;
-
 	this.report = function()
 	{
-		console.log (
+		console.log (chalk.cyan(
 			( "{0}\n" +
 			  "~~~~~~~~~~~~\n"+
 			  "ImportCount {1}\t" +
 			  "Strings {2}\n"
-			).format( this.FileName, this.ImportCount, this.Strings ));
+			)).format( this.FileName, this.ImportCount, this.Strings));
 	}
 }
 
@@ -99,6 +118,26 @@ function traverseWithParents(object, visitor)
     }
 }
 
+function traverseWithParents_d(object, depth ,visitor)
+{
+    var key, child;
+
+    visitor.call(null, object, depth);
+
+    for (key in object) {
+        if (object.hasOwnProperty(key)) {
+            child = object[key];
+            if (typeof child === 'object' && child !== null && key != 'parent') 
+            {
+            	child.parent = object;
+					traverseWithParents(child, depth ,visitor);
+            }
+        }
+    }
+}
+
+
+
 function complexity(filePath)
 {
 	var buf = fs.readFileSync(filePath, "utf8");
@@ -109,20 +148,67 @@ function complexity(filePath)
 	// A file level-builder:
 	var fileBuilder = new FileBuilder();
 	fileBuilder.FileName = filePath;
+	func_name = ""
 	fileBuilder.ImportCount = 0;
+	fileBuilder.Strings = 0; //to be written
 	builders[filePath] = fileBuilder;
 
+	// console.log(filePath)
 	// Tranverse program with a function visitor.
 	traverseWithParents(ast, function (node) 
 	{
 		if (node.type === 'FunctionDeclaration') 
 		{
+			func_name = functionName(node);
 			var builder = new FunctionBuilder();
-
 			builder.FunctionName = functionName(node);
-			builder.StartLine    = node.loc.start.line;
 
+			//LOC
+			builder.StartLine = node.loc.start.line;
+			builder.Endline = node.loc.end.line;
+			builder.LOC = builder.Endline-builder.StartLine
 			builders[builder.FunctionName] = builder;
+			if_count = 0;
+
+
+			//Max msg chains
+			//should i put if condition also outside
+			traverseWithParents(node, function(node){
+				if (node.type === 'MemberExpression') 
+				{
+					builder = builders[func_name];
+					local = 0
+					traverseWithParents(node, function(node){
+						if (node.type==='MemberExpression'){ 
+							//console.log(local)
+							local = local + 1;
+							if (local>builder.MaxMsgChains){
+								builder.MaxMsgChains = local;
+							}
+						}
+					});
+					builders[func_name] = builder;
+				}
+			})
+
+			// console.log(func_name)
+			// traverseWithParents(node, function(node){
+			// 	if (node.type === 'IfStatement' && node.alternate === null){
+			// 		return traverseWithParents(node.consequent)+1
+			// 	}
+			// 	else if (node.type === 'IfStatement' && node.alternate != "IfStatement"){
+			// 		left = traverseWithParents(node.cosequent)
+			// 		right = traverseWithParents(node.alternate)
+			// 		if (left>right){
+			// 			return left+1
+			// 		}
+			// 		else {
+			// 			return right+1
+			// 		}
+			// 	return 0
+			// 	} 
+			// })
+
 		}
 
 	});
@@ -148,6 +234,7 @@ function childrenLength(node)
 	return count;
 }
 
+	
 
 // Helper function for checking if a node is a "decision type node"
 function isDecision(node)
@@ -276,3 +363,5 @@ mints.toString().split(".")[0] + " " + szmin;
       }
   }
  exports.main = main;
+
+

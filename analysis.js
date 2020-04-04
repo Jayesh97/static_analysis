@@ -4,21 +4,20 @@ var fs = require("fs");
 const path = require("path");
 var file_array = require("./file_array.js");
 const chalk = require("chalk");
+var threshold = {'LOC_th':100,'chains_th':10,'nesting_th':5}
+var errors = []
 
+//https://jenkins.io/doc/book/pipeline/#declarative-pipeline-fundamentals
 
 function main()
 {
 	var args = process.argv.slice(2);
 
-	// console.log(args[0])
-
-	process.env.build_check = "Testing"
-
-	console.log(process.env.build_check)
-
 	//jenkins workspace
 	f_list = file_array.traverse_with_dir("./app/server-side",[]);
 	// f_list = file_array.traverse_with_dir("/home/sjbondu/Complexity/app/checkbox.io/server-side",[]);
+
+
 
 	for( let fname of f_list){
 		complexity(fname);}
@@ -28,7 +27,11 @@ function main()
 		builder.report(); //its basically a print statement
 	}
 	// console.log(builders)
+	errors.forEach(element => console.log(chalk.red(element)));
 
+	if(errors.length>0){
+		throw console.error("The Threshold values are voilated check the console log error list");	
+	}
 
 }
 
@@ -53,9 +56,24 @@ function FunctionBuilder()
 	this.MaxMsgChains = 0;
 	//LOC
 	this.LOC = 0;
+	//To include filename too
+	this.FileName = "";
 
 	this.report = function()
 	{
+
+		if (threshold.LOC_th < this.LOC){
+			console.log(chalk.red("LOC exceeds in", "\"",this.FunctionName,"\"", "function in file ---", this.FileName))
+			errors.push("LOC exceeds in"+"\""+this.FunctionName+"\""+"function in file ---"+this.FileName)
+		}
+		if (threshold.nesting_th < this.MaxNestingDepth){
+			console.log(chalk.red("Nesting depth exceed inside", "\"",this.FunctionName,"\"", "function in file ---", this.FileName))
+			errors.push("Nesting depth exceed inside"+"\""+this.FunctionName+"\""+"function in file ---"+this.FileName)
+		}
+		if (threshold.chains_th < this. MaxMsgChains){
+			console.log(chalk.red("Max Msg chains exceed inside","\"",this.FunctionName,"\"", "function in file ---", this.FileName))
+			errors.push("Max Msg chains exceed inside"+"\""+this.FunctionName+"\""+"function in file ---"+this.FileName)
+		}
 		console.log((chalk.rgb(150,136,0)
 		   (
 		   	"{0}(): {1}\n" +
@@ -186,6 +204,7 @@ function complexity(filePath)
 			func_name = functionName(node);
 			var builder = new FunctionBuilder();
 			builder.FunctionName = functionName(node);
+			builder.FileName = filePath;
 
 			//LOC
 			builder.StartLine = node.loc.start.line;

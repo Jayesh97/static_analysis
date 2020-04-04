@@ -10,8 +10,13 @@ function main()
 {
 	var args = process.argv.slice(2);
 
+	// console.log(args[0])
+
+	process.env.build_check = "Testing"
+
+	console.log(process.env.build_check)
+
 	//jenkins workspace
-	console.log("started");
 	f_list = file_array.traverse_with_dir("./app/server-side",[]);
 	// f_list = file_array.traverse_with_dir("/home/sjbondu/Complexity/app/checkbox.io/server-side",[]);
 
@@ -23,6 +28,7 @@ function main()
 		builder.report(); //its basically a print statement
 	}
 	// console.log(builders)
+
 
 }
 
@@ -119,7 +125,6 @@ function atleast_one_if(object)
             {
 				child.parent = object;
 				if(object.type==="IfStatement"){
-					console.log("here")
 					return 1
 				}
 				atleast_one_if(child);

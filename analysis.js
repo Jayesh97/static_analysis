@@ -27,10 +27,12 @@ function main()
 		builder.report(); //its basically a print statement
 	}
 	// console.log(builders)
-	errors.forEach(element => console.log(chalk.red(element)));
 
 	if(errors.length>0){
-		throw console.error("The Threshold values are voilated check the console log error list");	
+		console.log("----------`````````Errors Start Here```````---------------`````````Errors Start Here```````---------------```````````Errors Start Here```````----------");
+		errors.forEach(element => console.log(chalk.red(element)));
+		console.log("----------`````````Errors End Here```````---------------`````````Errors End Here```````---------------```````````Errors End Here```````----------");
+		throw console.error("The Threshold values are voilated check the above error list");	
 	}
 
 }

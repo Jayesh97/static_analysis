@@ -69,15 +69,15 @@ function FunctionBuilder()
 	{
 
 		if (threshold.LOC_th < this.LOC){
-			console.log(chalk.red("LOC exceeds in", "\"",this.FunctionName,"\"", "function in file ---", this.FileName))
+			console.log(chalk.red("LOC exceeds in ^^^ ", "\"",this.FunctionName,"\"", " ^^^ function in file --- ", this.FileName))
 			errors.push("LOC exceeds in"+"\""+this.FunctionName+"\""+"function in file ---"+this.FileName)
 		}
 		if (threshold.nesting_th < this.MaxNestingDepth){
-			console.log(chalk.red("Nesting depth exceed inside", "\"",this.FunctionName,"\"", "function in file ---", this.FileName))
+			console.log(chalk.red("Nesting depth exceed inside ^^^ ", "\"",this.FunctionName,"\"", " ^^^ function in file ---", this.FileName))
 			errors.push("Nesting depth exceed inside"+"\""+this.FunctionName+"\""+"function in file ---"+this.FileName)
 		}
 		if (threshold.chains_th < this. MaxMsgChains){
-			console.log(chalk.red("Max Msg chains exceed inside","\"",this.FunctionName,"\"", "function in file ---", this.FileName))
+			console.log(chalk.red("Max Msg chains exceed inside ^^^ ","\"",this.FunctionName,"\"", " ^^^ function in file ---", this.FileName))
 			errors.push("Max Msg chains exceed inside"+"\""+this.FunctionName+"\""+"function in file ---"+this.FileName)
 		}
 		console.log((chalk.rgb(150,136,0)

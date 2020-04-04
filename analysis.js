@@ -34,8 +34,8 @@ function main()
 		console.log("----------`````````Errors Start Here```````---------------`````````Errors Start Here```````---------------```````````Errors Start Here```````----------\n\n\n");
 		errors.forEach(element => console.log(chalk.red(element)));
 		console.log("\n\n\n----------`````````Errors End Here```````---------------`````````Errors End Here```````---------------```````````Errors End Here```````----------\n");
-		console.log("\n\n\n----------`````````Errors End Here```````---------------`````````Errors End Here```````---------------```````````Errors End Here```````----------\n");
-		console.log("\n\n\n----------`````````Errors End Here```````---------------`````````Errors End Here```````---------------```````````Errors End Here```````----------\n");
+		console.log("----------`````````Errors End Here```````---------------`````````Errors End Here```````---------------```````````Errors End Here```````----------\n");
+		console.log("----------`````````Errors End Here```````---------------`````````Errors End Here```````---------------```````````Errors End Here```````----------\n");
 		throw console.error("The Threshold values are voilated check the above error list");	
 	}
 

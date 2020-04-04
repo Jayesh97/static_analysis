@@ -29,9 +29,13 @@ function main()
 	// console.log(builders)
 
 	if(errors.length>0){
-		console.log("----------`````````Errors Start Here```````---------------`````````Errors Start Here```````---------------```````````Errors Start Here```````----------");
+		console.log("----------`````````Errors Start Here```````---------------`````````Errors Start Here```````---------------```````````Errors Start Here```````----------\n");
+		console.log("----------`````````Errors Start Here```````---------------`````````Errors Start Here```````---------------```````````Errors Start Here```````----------\n");
+		console.log("----------`````````Errors Start Here```````---------------`````````Errors Start Here```````---------------```````````Errors Start Here```````----------\n\n\n");
 		errors.forEach(element => console.log(chalk.red(element)));
-		console.log("----------`````````Errors End Here```````---------------`````````Errors End Here```````---------------```````````Errors End Here```````----------");
+		console.log("\n\n\n----------`````````Errors End Here```````---------------`````````Errors End Here```````---------------```````````Errors End Here```````----------\n");
+		console.log("\n\n\n----------`````````Errors End Here```````---------------`````````Errors End Here```````---------------```````````Errors End Here```````----------\n");
+		console.log("\n\n\n----------`````````Errors End Here```````---------------`````````Errors End Here```````---------------```````````Errors End Here```````----------\n");
 		throw console.error("The Threshold values are voilated check the above error list");	
 	}
 
